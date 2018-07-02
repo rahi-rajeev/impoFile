@@ -1,0 +1,51 @@
+<div class="test" ng-include="'views/script/template_menu.html'"></div>
+<div class="test" ng-include="'views/script/template_container.html'"></div>
+<!--Button Start Here-->
+<div class="row ">
+  <div class="col-sm-12 alert alert-info">
+    <button ng-click="expandAll()" class="btn btn-info"><i class=" glyphicon glyphicon-resize-full "></i>&nbsp;Expand all</button>
+    <button ng-click="collapseAll()" class="btn btn-warning"><i class="glyphicon glyphicon-resize-small"></i>&nbsp;Collapse all</button>
+    <button  class="btn btn-success" style="float:right">Save Menu</button>
+  </div>
+</div>
+<!--Button Ends Here-->
+
+
+
+<div class="row alert alert-danger">
+
+<!--Left sidebar Item List start Here-->
+<div class="test" ng-include="'views/left_item.html'"></div>
+<!--Left sidebar Item List ends Here-->
+
+
+<!--Right Side content Drag Drop Section Start Here -->
+  <div class="col-sm-9">
+  <div ui-tree id="tree-root">
+    <ol ui-tree-nodes ng-model="data">
+      <li ng-repeat="node in data" ui-tree-node ng-include="'nodes_renderer.html'"> 
+    </li>
+    </ol>
+
+  </div>
+  <!-- Modal Box for Item wrapper Section Tab start here -->
+    <div class="test" ng-include="'views/item_wrapper_model.html'"></div>
+  <!-- Modal Box for Item wrapper Section Tab ends here -->
+  </div>
+<!--Right Side content Drag Drop Section Ends Here -->
+
+    
+
+
+
+ <!--Code Start Here-->
+  <div class="col-sm-12">
+    <div class="info">
+      {{info}}
+    </div>
+    <pre class="code">{{ data | json }}</pre>
+  </div>
+<!--Code Start Here-->
+
+
+</div>

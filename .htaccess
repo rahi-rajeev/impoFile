@@ -1,0 +1,4 @@
+SetEnv PHPRC /home/samlorgo/public_html/php.ini
+AddHandler application/x-httpd-php71 .php .php5 .php4 .php3
+
+Redirect 302 /remotechatapi http://128.199.155.59:3000/

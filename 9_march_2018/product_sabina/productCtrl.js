@@ -1,0 +1,1128 @@
+/*
+*@Name : productCtrl.js
+*@description :  This controllter used to handel all product related functionality
+*@Careated :  18 sep 2017
+*@Author :  Smoothgraph Connect Pvt. Ltd.
+*/
+
+(function(){
+	"used strict";
+
+	function productCtrl($scope,salesfactoryData,$http,$sce,$timeout,$filter, treeNodeService,$rootScope){
+		$scope.product={
+			name :[],
+			prdtags :[],
+			stbprice :false,
+			processing_time:"",
+			initial_price:"",
+			special_price:"",
+			// sp_fromdate:,
+			//sp_todate :new Date(),
+			// expiry_date:,
+			//price section
+			stbprice:'',
+			tprices:[{tireQnt:"",tireQntPrice:""}],
+			bundelprice:[{bundelqunt:"",bundelprice:""}],
+			// tire_quantity:[{val:null}],
+			// tire_quantity_price:[{val:null}],
+			//variant section
+			hasvariants:false,
+			varientmodel:[],
+			variantTagsData:[],
+			//vedio section
+			videodobj:{videourl:"",video_prev_img:"",video_id:"",video_title:"",description:"",video_url:""},
+			videoFile:[],
+			//file upload section
+			file_interface:{},
+			remind_icon_file_interface:{},
+			setdefaultimg :true,
+			//warehouse sectio
+			warehouse_model:[],
+			/****This section used for specification model****/
+			specmodel:[],
+			speschoseattrset:"",
+			sepscreateset:{attrname:"",attrdesp:"",labelflag:"",fontcolor:"",flagbgcolor:""},
+			//this section used for requirement model
+			reqmodel:[],
+			// Selected Category Tree Items
+			selectedCateTree: [],
+			productImages: [],
+			defaultImage: "0",
+			createupdatetype:'',
+			defaultwhouse:defaultwarehouse, 
+			seo:{meta_title:[],meta_keyword:[],meta_description:[]},
+			name :{},
+			productDesc :{},
+		};
+		/******This variable define fro data section *****/
+		$scope.prdData={
+			//variant section
+			variants:variantdata,
+			selectTags:[{value:""}],
+			//categeroy section
+			cateTree:[{"id":13,"parent_id":0,"total_products":85,"categorydesc":{"id":53,"category_name":"Mobile 2","cat_id":13},"category":[],"checked":false,"name":"Mobile 2","children":[]},{"id":14,"parent_id":0,"total_products":32,"categorydesc":{"id":57,"category_name":"samsung","cat_id":14},"category":[{"id":3,"url":"sellercat","parent_id":14,"total_products":312},{"id":30,"url":"belt","parent_id":14,"total_products":11}],"checked":false,"name":"samsung","children":[{"id":3,"parent_id":14,"total_products":312,"categorydesc":{"id":13,"category_name":"sellercat","cat_id":3},"category":[{"id":2,"url":"lorem-ipsum-12","parent_id":3,"total_products":7},{"id":132,"url":"amit456","parent_id":3,"total_products":7}],"checked":false,"name":"sellercat","children":[{"id":2,"parent_id":3,"total_products":7,"categorydesc":{"id":214,"category_name":"Lorem Ipsum 12","cat_id":2},"category":[],"checked":false,"name":"Lorem Ipsum 12","children":[]},{"id":132,"parent_id":3,"total_products":7,"categorydesc":{"id":864,"category_name":"amit456","cat_id":132},"category":[],"checked":false,"name":"amit456","children":[]}]},{"id":30,"parent_id":14,"total_products":11,"categorydesc":{"id":121,"category_name":"belt","cat_id":30},"category":[],"checked":false,"name":"belt","children":[]}]},{"id":22,"parent_id":0,"total_products":68,"categorydesc":{"id":89,"category_name":"watch","cat_id":22},"category":[],"checked":false,"name":"watch","children":[]},{"id":29,"parent_id":0,"total_products":13,"categorydesc":{"id":117,"category_name":"action123","cat_id":29},"category":[],"checked":false,"name":"action123","children":[]},{"id":32,"parent_id":0,"total_products":64,"categorydesc":{"id":129,"category_name":"sdfsdafdf","cat_id":32},"category":[{"id":33,"url":"shirt","parent_id":32,"total_products":402}],"checked":false,"name":"sdfsdafdf","children":[{"id":33,"parent_id":32,"total_products":402,"categorydesc":{"id":137,"category_name":"shirt","cat_id":33},"category":[],"checked":false,"name":"shirt","children":[]}]},{"id":34,"parent_id":0,"total_products":10,"categorydesc":{"id":141,"category_name":"Black T - Shirt","cat_id":34},"category":[],"checked":false,"name":"Black T - Shirt","children":[]},{"id":35,"parent_id":0,"total_products":4,"categorydesc":{"id":145,"category_name":"Shirt","cat_id":35},"category":[{"id":36,"url":"black-shirt","parent_id":35,"total_products":4}],"checked":false,"name":"Shirt","children":[{"id":36,"parent_id":35,"total_products":4,"categorydesc":{"id":149,"category_name":"Black shirt","cat_id":36},"category":[],"checked":false,"name":"Black shirt","children":[]}]},{"id":37,"parent_id":0,"total_products":9,"categorydesc":{"id":153,"category_name":"White shirt","cat_id":37},"category":[],"checked":false,"name":"White shirt","children":[]},{"id":38,"parent_id":0,"total_products":5,"categorydesc":{"id":157,"category_name":"SEAFOOD","cat_id":38},"category":[],"checked":false,"name":"SEAFOOD","children":[]},{"id":41,"parent_id":0,"total_products":4,"categorydesc":{"id":236,"category_name":"clothing 45","cat_id":41},"category":[{"id":67,"url":"rwerwer","parent_id":41,"total_products":2}],"checked":false,"name":"clothing 45","children":[{"id":67,"parent_id":41,"total_products":2,"categorydesc":{"id":665,"category_name":"rwerwer","cat_id":67},"category":[{"id":40,"url":"seafood26","parent_id":67,"total_products":3}],"checked":false,"name":"rwerwer","children":[{"id":40,"parent_id":67,"total_products":3,"categorydesc":{"id":228,"category_name":"SEAFOOD26","cat_id":40},"category":[],"checked":false,"name":"SEAFOOD26","children":[]}]}]},{"id":59,"parent_id":0,"total_products":0,"categorydesc":{"id":471,"category_name":"Pqr","cat_id":59},"category":[],"checked":false,"name":"Pqr","children":[]},{"id":62,"parent_id":0,"total_products":1,"categorydesc":{"id":645,"category_name":"lenovo","cat_id":62},"category":[{"id":63,"url":"lenovo2","parent_id":62,"total_products":1},{"id":64,"url":"lenovo1","parent_id":62,"total_products":1},{"id":65,"url":"lenovo232","parent_id":62,"total_products":1},{"id":66,"url":"lenovo-k5","parent_id":62,"total_products":1}],"checked":false,"name":"lenovo","children":[{"id":63,"parent_id":62,"total_products":1,"categorydesc":{"id":649,"category_name":"lenovo2","cat_id":63},"category":[],"checked":false,"name":"lenovo2","children":[]},{"id":64,"parent_id":62,"total_products":1,"categorydesc":{"id":653,"category_name":"Lenovo1","cat_id":64},"category":[],"checked":false,"name":"Lenovo1","children":[]},{"id":65,"parent_id":62,"total_products":1,"categorydesc":{"id":657,"category_name":"Lenovo232","cat_id":65},"category":[],"checked":false,"name":"Lenovo232","children":[]},{"id":66,"parent_id":62,"total_products":1,"categorydesc":{"id":661,"category_name":"Lenovo K5","cat_id":66},"category":[],"checked":false,"name":"Lenovo K5","children":[]}]},{"id":68,"parent_id":0,"total_products":2,"categorydesc":{"id":669,"category_name":"motog 566","cat_id":68},"category":[{"id":86,"url":"moto566.06","parent_id":68,"total_products":2}],"checked":false,"name":"motog 566","children":[{"id":86,"parent_id":68,"total_products":2,"categorydesc":{"id":751,"category_name":"moto566.06","cat_id":86},"category":[],"checked":false,"name":"moto566.06","children":[]}]},{"id":69,"parent_id":0,"total_products":15,"categorydesc":{"id":673,"category_name":"yollo mobile","cat_id":69},"category":[],"checked":false,"name":"yollo mobile","children":[]},{"id":70,"parent_id":0,"total_products":0,"categorydesc":{"id":677,"category_name":"motooo","cat_id":70},"category":[{"id":74,"url":"mobile4851","parent_id":70,"total_products":0}],"checked":false,"name":"motooo","children":[{"id":74,"parent_id":70,"total_products":0,"categorydesc":{"id":693,"category_name":"mobile4851","cat_id":74},"category":[],"checked":false,"name":"mobile4851","children":[]}]},{"id":72,"parent_id":0,"total_products":0,"categorydesc":{"id":685,"category_name":"cat667","cat_id":72},"category":[],"checked":false,"name":"cat667","children":[]},{"id":73,"parent_id":0,"total_products":0,"categorydesc":{"id":689,"category_name":"Lenovo1232","cat_id":73},"category":[{"id":79,"url":"moto-g555","parent_id":73,"total_products":0},{"id":80,"url":"moto-f5","parent_id":73,"total_products":0},{"id":85,"url":"mithilesh0555","parent_id":73,"total_products":0}],"checked":false,"name":"Lenovo1232","children":[{"id":79,"parent_id":73,"total_products":0,"categorydesc":{"id":713,"category_name":"moto g555","cat_id":79},"category":[],"checked":false,"name":"moto g555","children":[]},{"id":80,"parent_id":73,"total_products":0,"categorydesc":{"id":717,"category_name":"Moto F5","cat_id":80},"category":[],"checked":false,"name":"Moto F5","children":[]}]},{"id":77,"parent_id":0,"total_products":0,"categorydesc":{"id":705,"category_name":"motokg","cat_id":77},"category":[{"id":76,"url":"motok","parent_id":77,"total_products":0}],"checked":false,"name":"motokg","children":[{"id":76,"parent_id":77,"total_products":0,"categorydesc":{"id":701,"category_name":"motok","cat_id":76},"category":[{"id":78,"url":"moto-k5","parent_id":76,"total_products":0}],"checked":false,"name":"motok","children":[{"id":78,"parent_id":76,"total_products":0,"categorydesc":{"id":709,"category_name":"moto k5","cat_id":78},"category":[{"id":75,"url":"moto7954","parent_id":78,"total_products":0}],"checked":false,"name":"moto k5","children":[{"id":75,"parent_id":78,"total_products":0,"categorydesc":{"id":697,"category_name":"moto7954","cat_id":75},"category":[],"checked":false,"name":"moto7954","children":[]}]}]}]},{"id":87,"parent_id":0,"total_products":0,"categorydesc":{"id":755,"category_name":"fruit","cat_id":87},"category":[],"checked":false,"name":"fruit","children":[]},{"id":89,"parent_id":0,"total_products":0,"categorydesc":{"id":759,"category_name":"mobile8754888","cat_id":89},"category":[],"checked":false,"name":"mobile8754888","children":[]},{"id":90,"parent_id":0,"total_products":0,"categorydesc":{"id":763,"category_name":"cate23222232","cat_id":90},"category":[],"checked":false,"name":"cate23222232","children":[]},{"id":130,"parent_id":0,"total_products":0,"categorydesc":{"id":856,"category_name":"C category","cat_id":130},"category":[],"checked":false,"name":"C category","children":[]},{"id":131,"parent_id":0,"total_products":0,"categorydesc":{"id":860,"category_name":"amar category","cat_id":131},"category":[],"checked":false,"name":"amar category","children":[]},{"id":136,"parent_id":0,"total_products":400,"categorydesc":{"id":876,"category_name":"cloth","cat_id":136},"category":[],"checked":false,"name":"cloth","children":[]},{"id":137,"parent_id":0,"total_products":400,"categorydesc":{"id":880,"category_name":"jacket","cat_id":137},"category":[],"checked":false,"name":"jacket","children":[]},{"id":138,"parent_id":0,"total_products":399,"categorydesc":{"id":884,"category_name":"mens","cat_id":138},"category":[{"id":151,"url":"testingcloth1","parent_id":138,"total_products":0},{"id":152,"url":"testingcloth2","parent_id":138,"total_products":0},{"id":153,"url":"testingcloth3","parent_id":138,"total_products":0},{"id":154,"url":"testingcloth5","parent_id":138,"total_products":0}],"checked":false,"name":"mens","children":[{"id":151,"parent_id":138,"total_products":0,"categorydesc":{"id":932,"category_name":"testingcloth1","cat_id":151},"category":[],"checked":false,"name":"testingcloth1","children":[]},{"id":152,"parent_id":138,"total_products":0,"categorydesc":{"id":936,"category_name":"testingcloth2","cat_id":152},"category":[],"checked":false,"name":"testingcloth2","children":[]},{"id":153,"parent_id":138,"total_products":0,"categorydesc":{"id":940,"category_name":"testingcloth3","cat_id":153},"category":[],"checked":false,"name":"testingcloth3","children":[]},{"id":154,"parent_id":138,"total_products":0,"categorydesc":{"id":944,"category_name":"testingcloth5","cat_id":154},"category":[],"checked":false,"name":"testingcloth5","children":[]}]},{"id":141,"parent_id":0,"total_products":3,"categorydesc":{"id":896,"category_name":" cloth","cat_id":141},"category":[],"checked":false,"name":" cloth","children":[]},{"id":142,"parent_id":0,"total_products":0,"categorydesc":{"id":900,"category_name":"testings","cat_id":142},"category":[],"checked":false,"name":"testings","children":[]},{"id":149,"parent_id":0,"total_products":1,"categorydesc":{"id":928,"category_name":"testingcloth","cat_id":149},"category":[],"checked":false,"name":"testingcloth","children":[]},{"id":155,"parent_id":0,"total_products":1,"categorydesc":{"id":948,"category_name":"Blog Category-1","cat_id":155},"category":[],"checked":false,"name":"Blog Category-1","children":[]},{"id":156,"parent_id":0,"total_products":1,"categorydesc":{"id":952,"category_name":"uuu","cat_id":156},"category":[],"checked":false,"name":"uuu","children":[]},{"id":158,"parent_id":0,"total_products":10,"categorydesc":{"id":960,"category_name":"bra","cat_id":158},"category":[{"id":159,"url":"subbar1","parent_id":158,"total_products":10}],"checked":false,"name":"bra","children":[{"id":159,"parent_id":158,"total_products":10,"categorydesc":{"id":964,"category_name":"subbar1","cat_id":159},"category":[],"checked":false,"name":"subbar1","children":[]}]},{"id":160,"parent_id":0,"total_products":10,"categorydesc":{"id":968,"category_name":"pant","cat_id":160},"category":[{"id":161,"url":"subpant1","parent_id":160,"total_products":10},{"id":162,"url":"subpant2","parent_id":160,"total_products":4},{"id":163,"url":"subpant3","parent_id":160,"total_products":4},{"id":164,"url":"subpant4","parent_id":160,"total_products":4},{"id":165,"url":"subpant5","parent_id":160,"total_products":4}],"checked":false,"name":"pant","children":[{"id":161,"parent_id":160,"total_products":10,"categorydesc":{"id":972,"category_name":"subpant1","cat_id":161},"category":[],"checked":false,"name":"subpant1","children":[]},{"id":162,"parent_id":160,"total_products":4,"categorydesc":{"id":976,"category_name":"subpant2","cat_id":162},"category":[],"checked":false,"name":"subpant2","children":[]},{"id":163,"parent_id":160,"total_products":4,"categorydesc":{"id":980,"category_name":"subpant3","cat_id":163},"category":[],"checked":false,"name":"subpant3","children":[]},{"id":164,"parent_id":160,"total_products":4,"categorydesc":{"id":984,"category_name":"subpant4","cat_id":164},"category":[],"checked":false,"name":"subpant4","children":[]},{"id":165,"parent_id":160,"total_products":4,"categorydesc":{"id":988,"category_name":"subpant5","cat_id":165},"category":[],"checked":false,"name":"subpant5","children":[]}]}],
+			//warehouse sectio
+			warehouse: [],
+			//video section
+			videolist:[],
+			//specification section 
+			specslist :[],
+			currentPage :0,pageSize:10,query:'',
+			specs_create_list:[],
+			spesattrset :[],
+			spescrtupdate:"createattrset",
+			spesdateoption:{
+				format:'dd-MMMM-yyyy',
+				opened: true,
+			},
+			//product requirement section
+		    reqlist:[],reqCurPage:0,reqPageSize:10,reqQuery:'',
+		    pagearr:[10,20,30,40,50],
+		    req_create_list:[],
+		    reqhas:false,
+		    //date picker option for date and time
+		    dateFromOption :{ 
+		    	wrap: true,
+		    	dateFormat : 'd/m/Y',
+		    },
+		    dateToOption :{
+		    	wrap: true,
+		    	dateFormat : 'd/m/Y',
+		    },
+		    dateOption :{
+		    	wrap: true,
+		    	dateFormat : 'd/m/Y',		    	
+		    },
+		    loading:{
+		    	"save_and_continue" : false,
+		    	"disableBtn" : false,
+		    	"btnloaderpath" :tableLoaderImgUrl,
+		    },		    
+		    //save and save_and_continue action flag
+			save_btn_action : "",
+		};
+		$scope.product.defaultwhouse.name=true;
+		$scope.product.defaultwhouse.stock=true;
+		$scope.product.nexpiry=true;
+		$scope.product.ready_ship= true;
+		$scope.product.autosku= true;
+		$scope.product.visibility= true;
+
+		$scope.activalangs = activelangs;
+		var selectable = true; 
+		//self excute function to gat all product requirement and specification data;
+ 		function _getReqmtSpeData(){
+ 			var urlarr =[attribute_requirment_url,warehoseurl,categorylisturl];
+ 			salesfactoryData.getAllData(urlarr,'GET',{'action' : 'add'}).then(function(rs){
+ 				//attrbute section
+ 				var attrData = rs[0].data;
+ 				$scope.prdData.specslist=attrData.attributes;
+				$scope.prdData.spesattrset=attrData.attributesets;
+				$scope.prdData.reqlist=attrData.requirements;
+				$scope.prdData.reqhas=(attrData.requirements.length>0)?true:false;
+				//warehouse section
+				var wrData = rs[1].data;
+				$scope.prdData.warehouse=wrData;
+				//console.log(rs[2]);
+				//$scope.$evalAsync(function(){
+					$scope.prdData.cateTree=rs[2].data;
+				//});
+				
+				angular.forEach(wrData, function(unit_warehouse){					
+					$scope.product.warehouse_model.push({name:false,stock:false,stock_value:"",lowstock_value:"",safetystock_value:"",warehouse_id:unit_warehouse.warehouse_id});   
+				});
+			},function(error){
+ 				_error();
+ 			});
+ 		};
+ 		_getReqmtSpeData();
+		/******This function used for load product tags on user input****/
+		$scope._loadProdTags = function(query){
+			if(query=='') return;
+			var o={'query' : query};
+			return salesfactoryData.getData(prdtagurl,'GET',o).then(function(r){
+				return r.data;
+			},function(error){
+				_error();
+			});
+		};
+		/******This section used for price section like tire bundel sepcial
+		*where mType = tprices,qnty = tire_quantity,qtPrice = tire_quantity_price,
+		***/
+		$scope.addTireprice = function($event,type){ 
+			$event.stopPropagation();
+			switch(type){
+				case 'tirerpice':
+					$scope.product.tprices.push({tireQnt:"",tireQntPrice:""});
+					break;
+				case 'bundelprice':
+					$scope.product.bundelprice.push({bundelqunt:"",bundelprice:""});
+					break;
+				default:
+				 break;
+			};
+		};
+		$scope.removeTireprice = function(index,type){
+			switch(type){
+				case 'tirerpice':
+					if($scope.product.tprices.length>1){
+						 $scope.product.tprices.splice(index, 1);
+					}else{
+						_messageHandler('warning',"You can't remove tire price because \n You have checked tireprice","Opps..");
+					}
+					break;
+				case 'bundelprice':
+					if($scope.product.bundelprice.length>1){
+						 $scope.product.bundelprice.splice(index, 1);
+					}else{
+						_messageHandler('warning',"You can't remove bundel price because \n You have checked bundelprice","Opps..");
+					}
+					break;
+				default:
+					break;
+			};
+		};
+		$scope.switchPecialPrice = function($event,spType){
+			if(spType==='tireprice'){
+				//reset bundel
+				$scope.product.bundelprice=[];
+				$scope.product.bundelprice.push({bundelqunt:"",bundelprice:""});
+				//reset special price
+				$scope.product.sp_fromdate = "";
+				$scope.product.sp_todate = "";
+				$scope.product.special_price = "";
+				$scope.prdData["dateToOption"].minDate = "";
+				$scope.prdData["dateFromOption"].maxDate = "";
+			}else if(spType==='bundleprice'){
+				//reset tire 
+				$scope.product.tprices=[];
+				$scope.product.tprices.push({tireQnt:"",tireQntPrice:""});
+				//reset special 
+				$scope.product.sp_fromdate = "";
+				$scope.product.sp_todate = "";
+				$scope.product.special_price = "";
+				$scope.prdData["dateToOption"].minDate = "";
+				$scope.prdData["dateFromOption"].maxDate = "";
+			}else if(spType==='specialprice'){
+				$scope.product.tprices=[];
+				$scope.product.tprices.push({tireQnt:"",tireQntPrice:""});
+				$scope.product.bundelprice=[];
+				$scope.product.bundelprice.push({bundelqunt:"",bundelprice:""});
+			}
+		};
+		$scope.sp_check_fun = function(){
+			if($scope.product.sp_tp_bp)
+				$scope.product.stbprice ="specialprice";
+			else{
+				$scope.product.stbprice ="";
+				$scope.product.tprices=[];
+				$scope.product.tprices.push({tireQnt:"",tireQntPrice:""});
+				$scope.product.bundelprice=[];
+				$scope.product.bundelprice.push({bundelqunt:"",bundelprice:""});
+				$scope.product.sp_fromdate = "";
+				$scope.product.sp_todate = "";
+				$scope.product.special_price = "";
+				$scope.prdData["dateToOption"].minDate = "";
+				$scope.prdData["dateFromOption"].maxDate = "";
+			};
+			// console.log($scope.product.sp_tp_bp);
+		};
+		
+		/***** This section used for all varient function******/
+		var clickCount =1,
+			variantComb =[],
+			varients_all_data=[];
+		$scope.addVariants = function(){
+		    clickCount++;
+		    $scope.prdData.selectTags.push({});
+		    if((($scope.prdData.variants.length)-1)<clickCount)
+		        $scope.disAddAnotherBtn= true;
+		}
+		$scope.removeVariants = function($event,index,tagIndex){
+		  $event.stopPropagation();
+		  if($scope.prdData.selectTags.length>1){
+		        $scope.disAddAnotherBtn= false;
+		        $scope.prdData.selectTags.splice(index,1);
+		        clickCount--;
+		        $scope.product.varientmodel.splice(index,1);
+		        $scope.product.variantTagsData[tagIndex]=[];
+		        variantComb.splice(index,1);
+		   }else{
+		   		_messageHandler('warning',"You can't remove this variants because \n You have checked multiple variants",'Opps..');
+		   }
+		};
+		$scope._varientCheckAction = function(vstatus){
+		    if(vstatus==true && $scope.prdData.selectTags.length<1){
+		        $scope.prdData.selectTags=[{value:""}];
+		    }
+		    /****This case used to remove vaitant if unchecked****/
+		    if(!vstatus){
+		        $scope.product.varientmodel =[];
+		        $scope.product.variantTagsData =[];
+		    }
+		};
+		$scope.loadvariantoptions = function(query,index) {
+			return varients_all_data[index];
+			//for only matching element comment above line.
+			//return _.filter(varients_all_data[index],function(o){ return o.values.toLowerCase()==(query.toLowerCase())});
+			// return .filter(function(option) {
+			// 	return option.values.toLowerCase().indexOf(query.toLowerCase()) != -1;
+			// });        
+		};
+		$scope.getAttributValuesAndAttribute = function(index,modelIndex,optIndex){
+			if(optIndex<0) return;
+			var data = {"vid":$scope.product.varientmodel[index].attr_id};
+			variantComb[index] = optIndex;
+			salesfactoryData.getData(variantUrl,'GET',data).then(function(r){
+				if(_.isArray(r.data) && r.data.length>0) varients_all_data[optIndex] = r.data;
+			},function(error){
+				_error();
+			});
+		};
+		/****This section used for video**/
+		var vidfile ='',user_uploadImg='',imgInd=0;
+		$scope.getVideoDetail= function(){
+			var youtube_reg = new RegExp(/^(http|https\:\/\/)?(www\.youtube|youtu\.be)\/.+$/);
+       		var url_regexp =  /(ftp|http|https):\/\/(\w+:{0,1}\w*@)?(\S+)(:[0-9]+)?(\/|\/([\w#!:.?+=&%@!\-\/]))?/;
+       		//check condtion for url 
+       		if($scope.product.videodobj.videourl==undefined || $scope.product.videodobj.videourl=='' || !url_regexp.test($scope.product.videodobj.videourl)) return;
+			//check youtube share usl
+			if($scope.product.videodobj.videourl.match(youtube_reg)){
+	            var youtube_id=$scope.product.videodobj.videourl.split(/v\/|v=|youtu\.be\//)[1].split(/[?&]/)[0];
+	            $scope.product.videodobj.videourl = "http://www.youtube.com/watch?v=" + youtube_id;  
+	        } 	        
+		    $scope.vloader = true;
+		    var obj = {'v_url':$scope.product.videodobj.videourl}; 
+		    salesfactoryData.getData(_getvideourl,'POST',obj).then(function(r){
+		    	var d = r.data;
+		    	if(d.status=='success' && d){ 
+		    		$scope.videotemp = d;
+		    		if(!_.isUndefined(d.id)){
+		    			$scope.product.videodobj.video_id = d.id;
+			           	$scope.product.videodobj.video_url = $sce.trustAsResourceUrl(d.video_url);
+			            $scope.product.videodobj.video_prev_img = d.thumbnail_small;
+			            $scope.product.videodobj.video_title = d.title;
+			            $scope.product.videodobj.description = d.description;  
+			            $scope.vloader = false;  
+		           }
+		    	}
+		    },function(error){
+		        $scope.vloader =false;
+		        _error();
+		    });
+		};
+		$scope.refreshVideoForm = function(){
+			for(var p in $scope.product.videodobj)
+			   if($scope.product.videodobj.hasOwnProperty(p))
+						$scope.product.videodobj[p] = '';
+		};
+		$scope.addVideo = function(){
+		  //case if user can change preview image
+		  /*  if(typeof vidfile !='undefined' && vidfile!=''){
+		        $scope.product.videoFile.push(vidfile);
+		        $scope.videotemp.usrfileIndex = ++imgInd;
+		        vidfile ='';
+		    }else {$scope.videotemp.usrfileIndex = 0};*/
+		    $scope.videotemp.vid = $scope.product.videodobj.video_id;
+		    $scope.videotemp.videourl = $scope.product.videodobj.videourl;
+		    $scope.videotemp.video_title = $scope.product.videodobj.video_title;
+		    $scope.videotemp.description = $scope.product.videodobj.description;
+		    $scope.videotemp.user_uploadImg = user_uploadImg;
+		    //set video in liast nad file
+		    var video_temp = angular.copy($scope.videotemp);
+		    $scope.prdData.videolist.push(video_temp);
+		    $scope.product.videoFile.push(video_temp);
+		    //reset videodobj field
+		    user_uploadImg ='',$scope.product.videodobj.videourl="",$scope.product.videodobj.video_id="",$scope.product.videodobj.video_title="",$scope.product.videodobj.description="";
+		};
+		$scope.removeVideo = function(vindex,usrfileIndex){
+			$scope.prdData.videolist.splice(vindex, 1);
+		    $scope.product.videoFile.splice(vindex, 1);
+		    //case if user can change preview image
+		   /* if(usrfileIndex!==0)
+		        $scope.product.videoFile.splice(usrfileIndex-1,1);*/
+		};
+		/******* video section ends here *****/
+		/*****This section used for file upload***/
+		// Listen for when the interface has been configured.
+        $scope.$on('$dropletReady', function whenDropletReady() {
+			if($scope.product.file_interface.allowedExtensions){
+				$scope.product.file_interface.allowedExtensions(file_upload_setting.allowed_extension);
+				$scope.product.file_interface.useArray(true);
+				//number of file can upload onces
+				$scope.product.file_interface.setMaximumValidFiles(file_upload_setting.max_number_file);
+				// total number of file can upload
+				$scope.product.file_interface.setMaxNumberFiles(file_upload_setting.max_number_file);
+			}
+			if($scope.product.remind_icon_file_interface.allowedExtensions){
+				$scope.product.remind_icon_file_interface.allowedExtensions(file_upload_setting.allowed_extension);
+				$scope.product.remind_icon_file_interface.useArray(true);
+			}
+	    });
+        // Listen for when the files have been successfully uploaded.
+        $scope.$on('$dropletSuccess', function onDropletSuccess(event, response, files) {
+            $scope.uploadCount = files.length;
+            $scope.success     = true;
+            $timeout(function timeout() {
+                $scope.success = false;
+            }, 5000);
+        });
+        $scope.$on('$dropletFileAdded', function onDropletSuccess(event,file) {		
+        	//for file size check (file size in Bytes)
+    		var FSize  = file.file.size;
+    		FSize =(FSize/1024/1024).toFixed(2);
+    		var validDropletFiles = $scope.product.file_interface.getFiles().filter(function(file) {
+				return (file.type !== 4);
+			});  
+
+         	if(file.type & $scope.product.file_interface.FILE_TYPES.INVALID){
+         		if(file.extension !== undefined && _getIndex(file_upload_setting.allowed_extension, file.extension) == -1){
+        			_messageHandler('warning','file extension not valid \n Please upload : ' +file_upload_setting.allowed_extension,'Opps..');
+         		}else if(file.maximum!== undefined && validDropletFiles.length > file.maximum){
+         			file.deleteFile();
+         			_messageHandler('warning','You are exceeds max allowed \t'+file_upload_setting.max_number_file,'Opps..');
+         		}else if(file.type && FSize>file_upload_setting.max_file_size){
+         			file.deleteFile();         	 
+         	   		_messageHandler('warning','File is too Large than max allowed  : \t'+file_upload_setting.max_file_size +'MB','Opps..');
+         		}
+         	}else if(file.type && FSize>file_upload_setting.max_file_size){
+         	   // In case file size larger than alowed file size
+         	   file.deleteFile();         	 
+         	   _messageHandler('warning','File is too Large than max allowed  : \t'+file_upload_setting.max_file_size +'MB','Opps..');
+         	}else if(file.maximum!== undefined && validDropletFiles.length > file.maximum){
+         		file.deleteFile();
+         		_messageHandler('warning','You are exceeds max allowed \t'+file_upload_setting.max_number_file,'Opps..');
+         	}
+        });
+
+		$scope._clearallfiles = function(){
+			var temp_file = $scope.product.file_interface.getFiles($scope.product.file_interface.FILE_TYPES.VALID);
+			angular.forEach(temp_file, function(item){
+				item.deleteFile();
+			});
+		};
+ 		/*****end file upload***/
+ 		/*****this section used for warehouse****/
+ 		$scope._wareCheckHendler= function(status,index,actType){
+ 			switch(actType){
+ 				case "managewarehouse":
+ 					if(!status){
+ 						$scope.product.warehouse_model[index].stock=false;
+ 						$scope.product.warehouse_model[index].stock_value="";
+ 						$scope.product.warehouse_model[index].lowstock_value="";
+ 						$scope.product.warehouse_model[index].safetystock_value="";
+ 					}
+ 					break;
+ 				case "managestock":
+					$scope.product.warehouse_model[index].stock_value="";
+					$scope.product.warehouse_model[index].lowstock_value="";
+					$scope.product.warehouse_model[index].safetystock_value="";
+ 					break;
+ 				default:
+ 				break;
+ 			};
+ 		};
+ 		/********Product variants and specification,requirement section*********/
+ 		$scope._removeSep= function($event,index,strFlag,item){
+			//this function used to remove object from  specs_create_list
+			$event.preventDefault(); 
+			if(strFlag === 'specification'){
+				var temp = angular.copy($scope.prdData.specslist);
+				temp = temp.concat(item);
+				$scope.prdData.specslist = temp;
+				var ind = $scope.prdData.specs_create_list.findIndex(function(x){
+					return(x.id!== undefined && x.id ===item.id);
+				});
+				var ind1 = $scope.product.specmodel.findIndex(function(x){
+					return(x.id!== undefined && x.id===item.id);
+				});
+				$scope.prdData.specs_create_list.splice(ind,1);
+				$scope.product.specmodel.splice(ind1,1);
+			}else if(strFlag === 'requirement'){  
+				var temp = angular.copy($scope.prdData.reqlist);
+				temp = temp.concat(item);
+				$scope.prdData.reqlist = temp;
+				var ind = $scope.prdData.req_create_list.findIndex(function(x){
+					return(x.id!== undefined && x.id===item.id);					
+				});
+				var ind1 = $scope.product.reqmodel.findIndex(function(x){
+					return(x.d!== undefined && x.id===item.id);
+				});
+				$scope.prdData.req_create_list.splice(ind,1);
+				$scope.product.reqmodel.splice(ind1,1);
+			}
+		};
+
+		$scope._attrSetChange = function(){
+			var o={};
+			if($scope.product.speschoseattrset!==null || $scope.product.speschoseattrset!=="") o["attr_set_id"]=$scope.product.speschoseattrset.id;
+			else{
+				o["attr_set_id"] ='';
+				$scope.prdData.spescrtupdate="createattrset";
+			}
+			salesfactoryData.getData(attributeurl,'GET',o).then(function(r){
+				if(r.data){
+					//console.log(r.data);
+					$scope.prdData.specs_create_list=[];
+	   			    $scope.copyAttributeSetDataToSpecCreateList(r.data.set_attributes);
+                    $scope.copyAttributeSetDataToSpecModel(r.data.set_attributes);
+					$scope.prdData.specslist = [];
+					$scope.prdData.specslist = r.data.except_attributes;
+					//$scope.product.specmodel = [];
+					//$scope.product.specmodel.push({textVal:null,selectVal:null,textareaVal:null,usevaiant:false,attrselect:null,mulattrselect:null,id:null});
+				}
+			},function(error){
+				_error();
+			});
+		};
+        $scope.copyAttributeSetDataToSpecCreateList = function(attrSetData){
+           if(attrSetData !== undefined){
+              $scope.prdData.specs_create_list = attrSetData;                      
+           }
+       	};
+        $scope.copyAttributeSetDataToSpecModel = function(attrSetData){
+            if(attrSetData !== undefined){
+               	$scope.product.specmodel = _.map(attrSetData, function(attrData, indx){
+                       var specData = { 
+                               textVal:"",
+                               selectVal:"",
+                               textareaVal:"",
+                               usevaiant: (attrData['is_varient'] === "1")? true : false, 
+                               attrselect:"",
+                               mulattrselect:"",
+                               id: attrData['id'],
+                               front_input: attrData['front_input'],
+                               required: attrData['required']
+                       }
+                       return specData;
+               })
+            }
+       	};
+       	$scope.unsetDefaultWarehouse= function(){
+       		if($scope.product.defaultwhouse.stock==false){
+       			$scope.product.defaultwhouse.stock_value = "";
+       			$scope.product.defaultwhouse.lowstock_value = "";
+       			$scope.product.defaultwhouse.safetystock_value = "";
+       		}
+       	};
+		$scope._wareCheckHendlerDefault= function(){
+			if($scope.product.defaultwhouse.name==false){
+				$scope.product.defaultwhouse.stock=false;
+			}
+		};
+
+		$scope.attrRadiochange= function(flag){
+			if(flag ==='updateattrset'){
+				$scope.product.sepscreateset={attrname:"",attrdesp:"",labelflag:"",fontcolor:"",flagbgcolor:""};
+			}
+		};
+
+		$scope._loadSpecMultiselectAttrs = function(attrs){
+			console.log(_.map(attrs, attr => attr.values));
+			return _.map(attrs, attr => attr.values);
+		};
+
+		$scope.getSpecTotalPageCount = function(totalFilteredSpecCount){
+			var count = Math.ceil(totalFilteredSpecCount/$scope.prdData.pageSize*1.0)
+			return count;
+		};
+		
+		$scope.specListQueryChanged = function(filteredSpecsList){
+			console.log(filteredSpecsList, $scope.prdData.currentPage, $scope.getSpecTotalPageCount(filteredSpecsList.length)-1)
+			// If the current page number exceeds the maximum page number, after filtering on a farther page.
+			// Eg: If currentpage is 10, but after filtering there is only 1 page. This resets back to page 1
+			if( $scope.prdData.currentPage > $scope.getSpecTotalPageCount(filteredSpecsList.length)-1 ){
+				$scope.prdData.currentPage = Math.max($scope.getSpecTotalPageCount(filteredSpecsList.length)-1, 0);
+			}
+		}
+
+		$scope.onDeleteImageFromImageUploadList = function(fileitem){
+			fileitem.deleteFile();
+			// Filter out images that are not "ngDroplet - type:4 - Deleted".
+			var validDropletFiles = _.filter($scope.product.file_interface.getFiles(), file => (file.type !== 4));
+			defaultImgIndx = parseInt($scope.product.defaultImage)
+			if(!isNaN(defaultImgIndx) && (validDropletFiles.length > 0)){
+				// In case the number of images are less than the last activated "set as display image" index
+				if(defaultImgIndx >= validDropletFiles.length){
+					$scope.product.defaultImage = "" + (validDropletFiles.length - 1);
+				}
+			}
+		}
+
+		$scope.dropCallback = function(index, item, external, type, flag) {
+			if(flag==='requirement'){
+				var temp =[];
+				if(item.get_all_attribute_value_detail.length>0){
+					(item.get_all_attribute_value_detail).map(function(it){
+						temp.push({check:false,priceval:"",pricetype:"",orderval:"",attr_val_id:it.attr_val_id});
+					});
+				}
+				$scope.$evalAsync(function(){
+					$scope.product.reqmodel.push({priceval:"",pricetype:'Fixed',oderval:"",id:item.id,multiopt:temp, id:item.id, front_input: item.front_input, required: item.required});
+					var indx = _.findIndex($scope.prdData.reqlist, (x) => x.id === item.id );
+					if(indx !== -1){
+						$scope.prdData.reqlist.splice(indx, 1);
+					}
+					$scope.prdData.req_create_list.push(item);
+				})
+			}
+			else if(flag==='specification'){
+				$scope.$evalAsync(function(){
+					$scope.product.specmodel.push({textVal:"",selectVal:"",textareaVal:"",usevaiant:false,attrselect:"",mulattrselect:"",id:item.id, front_input: item.front_input, required: item.required});
+					var indx = _.findIndex($scope.prdData.specslist, (x) => x.id === item.id );
+					if(indx !== -1){
+						$scope.prdData.specslist.splice(indx, 1);
+					}
+					$scope.prdData.specs_create_list.push(item);
+				})
+			}
+			// Return false here to cancel drop. Return true if you insert the item yourself.
+			return true;
+		};
+
+		$scope.processFilePickerFiles = function(productObj){
+			return _.reduce(productObj.specmodel, (acc, spec, indx) => {
+				if(productObj.specmodel[indx].filepickerFile !== undefined){
+					// File picker references cant be cloned to productObj (clone of $scope.product)
+					// Hence obtain the references from $scope.product
+					acc = acc.then(() => getBase64Url($scope.product.specmodel[indx].filepickerFile[0]))
+										.then((fileJsonObj) => {
+											productObj.specmodel[indx].filepickerVal = fileJsonObj
+										})
+										.catch((err) => console.log );
+				}
+				return acc;
+			}, Promise.resolve())
+			.then(() => productObj)
+			.catch((err) => {
+				console.log(err);
+				return Promise.reject(err);
+			});
+		}
+
+		$scope.processRemindIcon = (productObj) => {
+			return Promise.resolve()
+			.then(() => {
+				if(_.isEmpty($scope.product.remind_icon_file_interface)) return Promise.resolve();
+				// The ngDroplet file interface cannot be cloned, hence we need to look into $scope.product object
+				var validDropletFiles = _.filter($scope.product.remind_icon_file_interface.getFiles(), file => (file.type !== 4));
+				if(validDropletFiles[0] !== undefined && validDropletFiles[0].file){
+					return getBase64Url(validDropletFiles[0].file)
+								.then((fileJsonObj) => {
+									productObj.sepscreateset.remind_icon = fileJsonObj;
+									return productObj;
+								})
+								.catch((err) => {
+									console.log(err);
+									return Promise.reject(err);
+								});
+				}
+				return Promise.resolve();
+			})
+			.then(() => {
+				return Promise.resolve(productObj);
+			})
+			.catch((err) => {
+				console.log(err);
+				return Promise.reject(err);
+			});
+		}
+		
+		$scope.processProductImages = function(productObj){
+			var images = [];	
+			var formData = new FormData();
+			return Promise.resolve()
+			.then(function(){
+				// Filter out images that are not "ngDroplet - type:4 - Deleted".
+				var validDropletFiles = _.filter(productObj.file_interface.getFiles(), file => (file.type !== 4));
+				
+				console.log(validDropletFiles)
+				for(var i in validDropletFiles){
+					console.log(i)
+					formData.append("file"+[i]+"", validDropletFiles[i].file);
+				}
+				console.log("form data ??");
+				console.log(formData);
+
+
+				// Go through all images, and convert to base64 one by one
+				return _.reduce(validDropletFiles, (acc, dropletmodel, indx) => {
+					acc = acc.then(() => getBase64Url(dropletmodel.file))
+										.then((fileJsonObj) => {
+											fileJsonObj.is_default = false;
+											images.push(fileJsonObj);
+										})
+										.catch((err) => {
+											console.log(err);
+											return Promise.reject(err);
+										});
+					return acc;
+				}, Promise.resolve())
+			})
+			.then(() => {
+				// Mark the default image with is_default = true
+				defaultImgIndx = parseInt(productObj.defaultImage)
+				if(!isNaN(defaultImgIndx) && images.length > 0){
+					// In case the number of images are less than the last activated "set as display image" index
+					if(defaultImgIndx >= images.length){
+						images[images.length - 1].is_default = true;	
+					}else{
+						images[defaultImgIndx].is_default = true;
+					}
+				}
+				// productObj.productImages = images;
+				productObj.productImages = formData;
+			})
+			.then(() => productObj)
+			.catch((err) => {
+				console.log(err);
+				return Promise.reject(err);
+			});
+		}
+
+		$scope.processRequirements = function(productObj){
+			return new Promise(function(res, rej){
+				try{
+					for(var i=0; i<productObj.reqmodel.length; i++){
+						// If the requirement is a multiple option select requirement
+						if((productObj.reqmodel[i] !== undefined) && (productObj.reqmodel[i].multiopt !== undefined)){
+							for(var j=productObj.reqmodel[i].multiopt.length-1; j >= 0; j--){
+								if(productObj.reqmodel[i].multiopt[j].check !== true){
+									productObj.reqmodel[i].multiopt.splice(j, 1);
+								}
+							}
+						}
+					}
+					res(productObj);
+				}
+				catch(err){
+					rej(err);
+				}
+			});
+		}
+
+		$scope.processDates = function(productObj){
+			return new Promise(function(res, rej){
+				try{
+					// Convert expiry date to json string
+					if(productObj.expiry_date !== undefined && productObj.expiry_date){
+						productObj.expiry_date = productObj.expiry_date.replace(/\//g,'-');
+					}
+					if(productObj.sp_fromdate !== undefined && productObj.sp_fromdate){
+						productObj.sp_fromdate = productObj.sp_fromdate.replace(/\//g,'-');
+					}
+					if(productObj.sp_todate !== undefined && productObj.sp_todate){
+						productObj.sp_todate = productObj.sp_todate.replace(/\//g,'-');
+					}
+					// Convert any dates in spec to json string
+					for(var i=0; i<productObj.specmodel.length; i++){
+						if(productObj.specmodel[i] !== undefined  && productObj.specmodel[i].deldate !== undefined && productObj.specmodel[i].deldate){
+							//productObj.specmodel[i].deldate = productObj.specmodel[i].deldate.toJSON();
+							productObj.specmodel[i].deldate = productObj.specmodel[i].deldate.replace(/\//g,'-');
+						}
+					}
+					res(productObj);
+				}
+				catch(err){
+					rej(err);
+				}
+			});
+		}
+
+		function getBase64Url(fileObj) {
+			 return new Promise(function(res, rej){
+				 try{
+					reader = new FileReader();
+					reader.readAsDataURL(fileObj);
+					reader.onloadend = function(){
+						res({
+							filename: fileObj.name,
+							filecontent: reader.result
+						});
+					};
+				 }
+				 catch(err){
+					 rej(err);
+				 }
+			 });
+		};
+
+		$scope.convertToRequiredSaveFormat = function(productObj){
+			return new Promise(function(res, rej){
+				try{
+					var specs = [];
+					for(var i=0; i<productObj.specmodel.length; i++){
+						var spec = {};
+						spec.attribute_id = productObj.specmodel[i].id;
+						spec.front_input = productObj.specmodel[i].front_input;
+						spec.usevaiant = productObj.specmodel[i].usevaiant;
+						spec.required = productObj.specmodel[i].required;
+							
+						if(productObj.specmodel[i].front_input === 'text'){
+								spec.attribute_values = productObj.specmodel[i].textVal;
+						}
+						else if(productObj.specmodel[i].front_input === 'textarea'){
+								spec.attribute_values = productObj.specmodel[i].textareaVal;
+						}
+						else if(productObj.specmodel[i].front_input === 'date_picker'){
+							spec.attribute_values = productObj.specmodel[i].deldate;
+						}
+						else if(productObj.specmodel[i].front_input === 'select'){						
+							if(productObj.specmodel[i].attrselect !== null || productObj.specmodel[i].attrselect !== ""){
+								options = [];
+								if(_.isArray(productObj.specmodel[i].attrselect)){
+									options = productObj.specmodel[i].attrselect
+								}
+								else if(_.isObject(productObj.specmodel[i].attrselect)){
+									options = [productObj.specmodel[i].attrselect]
+								}
+								spec.attribute_value_ids = _.map(options || [], (v) => v.attr_val_id);
+							}
+							// if(productObj.specmodel[i].attrselect !== null){
+							// 	spec.attribute_value_ids = productObj.specmodel[i].attrselect.attr_val_id;
+							// }
+						}
+						else if(productObj.specmodel[i].front_input === 'multiselect'){
+							if(productObj.specmodel[i].mulattrselect !== null || productObj.specmodel[i].mulattrselect !== ""){
+								options = [];
+								if(_.isArray(productObj.specmodel[i].mulattrselect)){
+									options = productObj.specmodel[i].mulattrselect
+								}
+								else if(_.isObject(productObj.specmodel[i].mulattrselect)){
+									options = [productObj.specmodel[i].mulattrselect]
+								}
+								spec.attribute_value_ids = _.map(options || [], (v) => v.attr_val_id);
+							}
+						}
+						else if(productObj.specmodel[i].front_input === 'browse_file'){
+							spec.files = productObj.specmodel[i].filepickerVal;
+						}
+						specs.push(spec);
+					}
+					productObj.specmodel = specs;
+					res(productObj);
+				}
+				catch(err){
+					rej(err);
+				}
+			})
+		};	
+
+		//Listen on  save or save and continue product section
+		$scope.saveProduct= function($event, productForm, btn_action){
+			$event.stopPropagation();
+			//set button action
+			//console.log(productForm);
+			$scope.prdData.save_btn_action = btn_action; 
+
+			//grt file to check
+			var validDropletFiles = _.filter($scope.product.file_interface.getFiles(), file => (file.type !== 4));
+
+			//check form is valid or not and show error message
+			if($scope.productform.$invalid === true || validDropletFiles.length === 0){
+				var errorHtml = '';	
+				for(var i in formFieldName){
+					// console.log($scope.productform[formFieldName[i]])
+					if(($scope.productform[formFieldName[i]]!==undefined &&
+						$scope.productform[formFieldName[i]].$error!== undefined && 
+						$scope.productform[formFieldName[i]].$error.required === true) &&
+						$scope.productform[formFieldName[i]].$invalid === true){
+							errorHtml += '<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign text-left" aria-hidden="true"></span><span class="sr-only">Error:</span>'+errorMsg[i]+'</div>';
+					}
+				}
+
+				if(validDropletFiles.length === 0){
+					errorHtml += '<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>File is required</div>'
+				}
+
+				_messageHandler("error", errorHtml,"Error");
+				return;
+			}
+
+			//enable page loader and disable save,save_continue button
+			$scope.prdData.loading.save_and_continue = true;
+			$scope.prdData.loading.disableBtn = true;
+		
+			$scope.product.createupdatetype = $scope.prdData.spescrtupdate;
+			var productObj = angular.copy($scope.product);
+			//console.log(JSON.stringify(productObj));
+			//return;
+			$scope.processFilePickerFiles(productObj)
+			.then((productObj) => $scope.processRemindIcon(productObj))
+			// .then((productObj) => $scope.processProductImages(productObj))
+			.then((productObj) => $scope.processRequirements(productObj))
+			.then((productObj) => $scope.processDates(productObj))
+			.then((productObj) => $scope.convertToRequiredSaveFormat(productObj))
+			.then((productObj) => {	
+				//set product id related,crosssale ,upsale ,simple product and config product			
+				productObj["config_prd_id"] = $rootScope.prd_data.config_product_id;
+				productObj["simple_prd_id"] = $rootScope.prd_data.simple_product_id;
+
+				productObj["related_prd_id"] = $rootScope.prd_data.related_product_id_id;
+				productObj["crossale_prd_id"] = $rootScope.prd_data.cross_sale_product_id;
+				productObj["upsale_prd_id"] = $rootScope.prd_data.up_sale_product_id;
+				//console.log(JSON.stringify(productObj));
+				//return;
+				if(typeof product_type !=="undefined" && product_type!==undefined){
+					productObj["product_type"] = product_type;	
+				}
+				
+				//for change name and desc to json string
+				productObj.name = angular.toJson(productObj.name);
+				productObj.productDesc = angular.toJson(productObj.productDesc);
+
+				$http({
+					method:"POST",
+					url : producturl,
+					headers: { 'Content-Type': undefined },
+					transformRequest : function(data){
+						var formdata = new FormData();
+						formdata.append('product',angular.toJson(productObj));
+						//for product image 
+						var def = parseInt($scope.product.defaultImage);
+						if(validDropletFiles !== undefined && validDropletFiles.length>0){
+							for(var i=0; i<validDropletFiles.length; i++){
+								//for default image
+								if(def === i){									
+									var objdef = {"id":"","is_default" : true, "index" : def, "name" : validDropletFiles[i].file.name};
+									formdata.append("defaultImage", angular.toJson(objdef));
+								}	
+								formdata.append("product_images["+i+"]", validDropletFiles[i].file);  
+							}							
+						}
+						return formdata;
+					},
+					data : {},
+				}).then(function(response){
+					if(response.data.status=='error'){
+	               		//enable tab 
+	            		if(response.data.section=='product'){
+	            			$scope.liActiveHandler('','enable_product_tab');
+						}else if(response.data.section=='warehouse'){	            		
+	            			$scope.liActiveHandler('','enable_warehouse_tab');
+	            		}else if(response.data.section == 'bundle'){
+	            			$scope.liActiveHandler('','enable_bundel_tab');
+	            		}
+	            		
+	            		var errorhtml = '';
+	            		angular.forEach(response.data.error, (error)=>{
+							errorhtml += '<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span><span class="sr-only">Error:</span>'+error+'</div>'
+						});
+	            		swal({
+							  title: '',
+							  type: 'error',
+							  html: errorhtml,
+							  showCloseButton: true,
+							  showCancelButton: false,
+							  focusConfirm: false,
+							  showConfirmButton: false
+							  
+							})
+	            		errorhtml = '';
+	            	}else{
+	            		if($scope.prdData.save_btn_action == 'save' && response.data.status=="success"){
+	            			swal({
+		                        title: "Good",
+		                        text: "Product successfully created try other.",
+		                        type: "success",
+		                        showConfirmButton:false,
+		                        timer: 3000
+		                    }).then(
+	                           function () {},
+	                           function(dismiss){                           
+	                          	window.location.href = response.data.save_url;	                           
+	                    	});	            				
+	            		}else if($scope.prdData.save_btn_action == 'save_and_continue' && response.data.status=="success"){
+	            			swal({
+		                         title: "Good",
+		                         text: "Product successfully created.",
+		                         type: "success",
+		                         showConfirmButton:false,
+		                         timer: 3000
+			                 })
+        					 .then(
+	                          function () {},
+	                          function(dismiss){                           
+	                          	window.location.href = response.data.cont_url;	                           
+                    	    });
+	            		}	            		
+			        }
+				},function(error){
+					_error();					
+				}).finally(function(){
+					$scope.prdData.loading.save_and_continue = false;
+					$scope.prdData.loading.disableBtn = false;
+				});	
+		    })
+			.then((res)=>{
+				console.log(res);
+			})
+			.catch((err) => {
+				console.log(err)
+			});
+		 //  this.sendImagesViaAjax();
+		};
+		//Listen on save all change varient
+		$scope.saveVariants = function(){
+	        salesfactoryData.getData(variantsaveurl,'POST',$scope.variantsCombinationData)
+	        .then(function(response){
+	        	if(response.data.status!==undefined && (response.data.status === true || response.data.status == true)){ 
+	                angular.element('#variantmodal').modal('hide'); 
+	                swal({
+	                     title: "Good",
+	                     text: "Product successfully created.",
+	                     type: "success",
+	                     timer: 3000
+                     }).then(
+                      function(){},
+                      function(dismiss){
+                      		window.location.href = productvarianturl;
+                       // window.location.href = productvarianturl+response.data.parent_id;
+	                });                
+	            }	               
+	        },function(error){
+	        	_error();
+	        });
+	    };
+ 		/*******Related product section (Table section config)*****/
+ 		$scope.checksku= function(sku){
+        	var data = {'sku':sku };
+        	salesfactoryData.getData(skucheckurl,'GET',data).then(function(response){
+	    		if(response.data.status){
+	                $scope.skuexists = true;
+	            }
+	            else{
+	                $scope.skuexists = false;
+	            }
+           
+        	});
+	    };
+	    //save new category section savenewcaturl
+	   	$scope.saveNewCat= function(){
+			if($scope.catname!='' || $scope.catname!=null){
+				console.log($scope);
+				salesfactoryData.getData(savenewcaturl,'POST',{catname:$scope.catname}).then(function(resp){
+					if(resp.data.status==="success"){
+						$scope.showcatform = false;
+						$scope.hidecreatebutton = true;
+						$scope.prdData.cateTree = JSON.parse(resp.data.catobj);
+					}
+				},function(error){
+					//body
+				});
+			}
+		};
+		//Bundel product section
+		//Listen on product tab (li) active
+		$scope.liActiveHandler = function($event,strflag){
+			for (var p in $rootScope.prd_tab) {
+			    if ($rootScope.prd_tab.hasOwnProperty(p) && p===strflag) {
+			        $rootScope.prd_tab[p] = true;
+			        if(strflag==='enable_related_tab'){
+			        	$scope.$broadcast('getRelatedPrdData');
+			        }
+			    }else{
+					$rootScope.prd_tab[p] = false;
+				}
+			}
+			// if($event=='') return;
+			// $event.preventDefault();
+		};
+		/**
+        *Listen on change date (from to ) and  update date picker
+		*@params dateFrom and dateTo
+		*@param Datepicker option name (dateFromOption and dateToOption)
+		**/
+        $scope._updateDatePicker = function(dateFrom, dateTo, dateFromOption, dateToOption){
+        	// if(typeof dateFrom == "undefined" ||  typeof dateTo == "undefined")
+        	// 	return;
+
+        	if(dateFrom!== undefined){
+        		var date = dateFrom.split("/");
+	        	var _d = parseInt(date[0]),
+	        		_m = parseInt(date[1]),
+	        		_y = parseInt(date[2]);
+	        	var dateObj = new Date(_y, _m, _d);
+	        	dateObj.setDate(dateObj.getDate() + 1);
+        	}
+
+        	if(!isNaN(dateObj)){
+        		dateFrom = dateObj.getDate() +"/" + dateObj.getMonth() + "/" + dateObj.getFullYear();
+        	}
+        	
+        	$scope.prdData[dateFromOption].maxDate = dateTo;
+            $scope.prdData[dateToOption].minDate = dateFrom;
+        };
+	};
+	var filesInputDirective = function() {
+		return {
+			require: "ngModel",
+			link: function postLink(scope,elem,attrs,ngModel) {
+				elem.on("change", function(e) {
+					var files = elem[0].files; 
+					ngModel.$setViewValue(files);
+				})
+			}
+		}
+	};
+	
+
+	angular.module("sabinaAdminApp").controller('productCtrl', productCtrl);
+	angular.module("sabinaAdminApp").directive("filesInput", filesInputDirective);
+
+	//Listen on error 
+    function _error(){
+      try{throw new Error("Something went badly wrong!");}
+      catch(e){
+      	_messageHandler('error','Something went wrong!','Oops...')
+        console.log("Opps "+e);      
+      };
+    };
+	/****
+    *This function used to message display using sweert alert.
+    *@_type : like error, sucess
+    *@_txt : message
+    *@_title : message title
+    *@_time :timer for auto hide after timeout
+	*@_showCancelButton :  true or false
+    *****/
+    function _messageHandler(_type,_txt,_title,_time,_showCancelButton){
+    	swal({
+    		position: 'top-right',
+    		type: _type,
+    		title: _title,
+    		text: _txt,
+    		//timer : _time || 1500,
+    		closeOnConfirm: false,
+	        closeOnCancel: false
+    	}).then(function(isConfirm){
+    		 // handle confirm, result is needed for modals with input    		 
+       	},function(dismiss){
+    		// dismiss can be "cancel" | "close" | "outside"    		
+    	});    	
+    };
+
+    /*Listen for get index 
+    *@param : destObj (oject/array)
+    *@param : matchEle (string)
+    *@param : matchType (string -optional)
+    */
+    function _getIndex(destObj, matchEle, matchType){
+    	var index;
+    	index = destObj.findIndex(function(item){
+    		if(matchType!== undefined && matchType){
+    			return (item[matchType] == matchEle);
+    		}else{
+    			return (item == matchEle);
+    		}
+    	});
+    	return index;
+    }	
+
+})(window.angular);
+// jQuery section for product section
+jQuery(document).ready(function($) {
+	setTimeout(function(){
+		$('.colorpicker-element').colorpicker();
+	}, 200);
+});
