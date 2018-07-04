@@ -1,0 +1,230 @@
+{extends file="core/main.tpl"}
+{block name=head}
+	<link rel="stylesheet" type="text/css" href="{$smarty.const.WEB_META_BASE_URL}css/jqFilterPagination.min.css"">
+{/block}
+{block name=script}
+
+	<script type="text/javascript">
+		var MSG_VALID_FIELD = "{'Required'|dict}";
+		var dataConfig = {$fair_json};		
+	</script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.21.0/moment.min.js"></script>
+	<script type="text/javascript" src="{$smarty.const.WEB_META_BASE_URL}js/jqFilterPagination.min.js" ></script>
+	<script type="text/javascript" src="{$smarty.const.WEB_META_BASE_URL}js/business_match_schedule.js" ></script>
+{/block}
+
+{block name=body}
+
+	<!-- <div class="breadcrumbs">
+		<ol class="breadcrumb">
+			<li class="breadcrumb-item"><a href="#">Home</a></li>
+			<li class="breadcrumb-item"><a href="#">Unifirms Co.,Ltd.</a></li>
+			<li class="breadcrumb-item active"><a href="#">Store’s Statistic</a></li>
+		</ol>
+	</div> -->
+	{$progress_bar} 
+	<form id="business_match_schedule" class="business_match_schedule" method="post" >
+		<div class="box">
+			<div class="tab-content">
+				
+				<div id="sendDemand" class="req-equot-list tab-pane fade in active">
+					<h3 class="heading back">
+						<span>1</span> Choose Fair<i class="star">*</i>
+					</h3>
+					<div class="req-eqout-content">
+						<div class="row form-row">
+							<div class="col-sm-6">
+							<select id="trade_fair" name="fair" class="sty_selectbox validate[required]">
+							<option value="">{"Select Fair"|dict}</option>
+								{if $LIST_FAIR }
+								
+									{foreach $LIST_FAIR as $con}
+										<option value="{$con.trade_fair_id}">{$con.trade_fair_name}</option>
+									{/foreach}
+								{/if}
+							</select>
+							</div>
+						</div>
+					</div>
+					<h3 class="heading back">
+						<span>2</span> Please Specific Product Category of interest (Maximum 6 Category)<i class="star">*</i>
+					</h3>
+					<div class="req-eqout-content full">
+						<div class="row form-row">
+							<div class="col-sm-5">
+								<select id="category" name="category[]" class="sty_selectbox" rel="{'Please select'|dict}">
+									<option value="">Specific product category</option>
+										{foreach $LIST_MAIN_CAT as $cat}
+										<option value="{$cat.category_id}">{$cat.category}</option>
+								{/foreach}
+								</select>
+								<label>&nbsp;</label>
+							<div class="multiselect-value">
+								<ul>
+
+								</ul>
+							</div>
+							</div>
+							<div class="col-sm-1">
+							<label class="or">or</label>
+							</div>
+							<div class="col-sm-6">
+								<!-- <button class="btn full-width">Select Seller</button> data-toggle="modal" data-target="#seller-select-modal"-->
+								<button type="button" class="btn btn1 btn-blue full-width"  id="select_seller" >Select Seller</button>
+								<div class="" id="selected_seller_list">
+									<ul>
+									
+									</ul>
+								</div>
+							</div>
+						</div>
+
+					</div>
+					<div class="req-eqout-content">
+						<div class="row form-row">
+							<div class="col-sm-6">
+								<label>Please specific product detail (eg. Size/Quality, Color/Material, or other specific)<i class="star">*</i></label>
+								<textarea name="specification" id="specification" class="sty_input validate[required]"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+		</div>
+		<div class="box" id="schedule_box" style="display: none;">
+			<p class="details-sch">Specific Avalible Schedule</p>
+			<div class="pagetitle">
+				<h1 class="titles">THAILAND AUTO PARTS & ACCESSORIES 2018</h1>
+			</div>
+			<div class="req-eqout-content mt-15 datetimeSelecter">
+				<div class="row form-row">
+					<div class="col-sm-4">
+						<label><strong>Select date</strong><i class="star">*</i></label>
+						<label class="check-wrap">Everyday : <span id="hintDate"></span>
+						</label>
+					</div>
+					<div class="col-sm-4">
+						<label><strong>Select time</strong><i class="star">*</i></label>
+						<label class="check-wrap">All day : <span id="hintTime"></span>
+						</label>
+					</div>
+					<div class="col-sm-4 hidden-xs">
+						<label>&nbsp;</label>
+					</div>
+				</div>
+				
+			</div>
+			<p class="details-sch green">Your Availible Schedule</p>
+			<div class="schedule-contain">
+			<!--here get data from ajax-->
+			</div>
+			<div class="btn-row mt-15">
+				<button class="btn btn1 btn-blue">Confirm booking Schedule</button>
+			</div>
+		</div>
+		<input type="hidden" name="selectionType" id="selectionType" value="">
+		<input type="hidden" name="selected_seller" value="" id="selected_seller">
+		<input type="hidden" id="business_match_id" name="business_match_id" value="{$business_match_id}">
+		<input type="hidden" name="cmd" value="submitschedule">
+	</form>
+
+	<!-- Select seller popup -->
+	<div id="seller-select-modal" class="modal fade in" role="dialog">
+	  <div class="modal-dialog modal-lg">
+	    <!-- Modal content-->
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <span class="close-icon" data-dismiss="modal"><i class="icon-close"></i></span>
+	        <h4 class="modal-title">Select Seller</h4>
+	      </div>
+	      <div class="modal-body">
+	      		<form class="business_match_form">				
+					<div class="search-modal-header clearfix hide" style="display: none;">
+						<div class="search-wrap col-sm-6">
+							<input type="text" name="" placeholder="Search">
+							<button class="btn"><i class="icon-search"></i></button>
+						</div>
+						<div class="col-sm-3">
+							<select>
+								<option>Category</option>
+								<option>Category2</option>
+							</select>
+						</div>
+						<div class="col-sm-3">
+							<select>
+								<option>Sub Category</option>
+								<option>Sub Category2</option>
+							</select>
+						</div>
+					</div>
+
+					
+					<h2 style="display: none;" class="subtitle-modal">Exhibitor & Seller list <span>Items 1-9 of <span id="totseller">14</span></span> </h2>
+					<h2 class="subtitle-modal">Exhibitor & Seller list <span>Total <span id="totseller">14</span> Items</span> </h2>
+					<ul class="seller-list row" id="seller_list">
+						<div class="jplist-panel">						
+					      <!-- pagination control -->
+					      <div 
+					         class="jplist-pagination" 
+					         data-control-type="pagination" 
+					         data-control-name="paging" 
+					         data-control-action="paging"
+					         data-items-per-page="5">
+					      </div>				      
+					   </div>
+
+						<li class="col-md-3 col-sm-4">
+							<div class="seller-list-option">
+								<label class="check-wrap"> &nbsp;
+									<input name="" id="" type="checkbox" value="">
+									<span class="chk-label"></span>
+								</label>
+								<h3>Company Name</h3>
+								<span class="memberModal"><a href="javascript:void(0)">Member of thaitrade</a></span>
+							</div>
+						</li>
+						
+					</ul>
+
+					<div class="clearfix modal-footer txt-center">
+						<div class="pull-left" style="display: none;">
+							<div class="perpage">
+								<span>Per Page</span>
+								<select>
+									<option>10</option>
+									<option>20</option>
+									<option>50</option>
+								</select>
+							</div>
+						</div>
+						
+						<div class="pagging" style="display: none;">
+							<div id="paging">
+								<a class="link selected f-page " href="#"><span class="txt-page">1</span></a>
+								<a class="link " href="#"><span class="txt-page">2</span></a>
+								<a class="link l-page " href="#"><span class="txt-page">3</span></a>
+								<span class="sdot">...</span>
+								<a class="link " href="#"><span class="txt-page">300</span></a>
+							</div><a id="next" href="#" style="display: none;">next →</a>
+						</div>
+
+
+						<div class="btn-group pull-right">
+							<a href="javascript:void(0)" class="btn-grey back close-icon" data-dismiss="modal">Back</a>
+							<button type="button" id="sel-seller" class="btn-blue">Submit</button>
+						</div>
+					</div>
+				
+				</form>
+	      </div>
+
+	    </div>
+
+	  </div>
+	</div>
+
+
+
+
+{/block}
